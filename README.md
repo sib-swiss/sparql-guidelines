@@ -1,6 +1,6 @@
 # 📖 Guidelines for SPARQL endpoints metadata
 
-Add precomputed metadata to your SPARQL endpoint to make it easier to query it by humans and machines:
+Add precomputed metadata to your SPARQL endpoint to make it easier to query by humans and machines:
 
 - **SPARQL examples** give a good idea of the capabilities and known use-cases of your endpoint, as well as recommended query patterns. Most public endpoints already provide example queries, we propose to expose them directly in the SPARQL endpoint in a standard format.
 - **A lightweigth classes schema** provide an overview of all classes actually present in the endpoint and the predicates they use.
@@ -19,19 +19,18 @@ Add precomputed metadata to your SPARQL endpoint to make it easier to query it b
 
 ## 🧑‍🍳 How?
 
-Precompute the metadata as RDF, and upload it to the endpoint, either:
+Precompute the metadata as RDF using command line tools, and upload it to the endpoint, either:
 
 - Directly in the endpoint, usually in a named graph ending with `/.well-known/sparql-examples`
-  - Or in the endpoint’s service description	
-
+- Or in the endpoint’s service description
 
 > [!IMPORTANT]
 >
 > Putting the metadata in the endpoint has many advantages:
 >
-> - The endpoint URL is all a user needs: any user or systems can directly retrieve the metadata from the endpoint, no need to query an external service to get the metadata
+> - The endpoint URL is all a user needs: any user or systems can directly retrieve the metadata from the endpoint using its URL, no need to know and query an external service to get the metadata
 > - Cheap and efficient stack, no need to deploy and maintain an extra service and/or database
-> - Can be queried from any client using a standard HTTP request, no need for adhoc niche packages
+> - Can be queried from any client using a standard HTTP request, no need for ad hoc packages
 
 The following ontologies are used to define the metadata:
 
@@ -139,9 +138,9 @@ java -jar void-generator-*.jar \
 
 Once the RDF files are generated, upload them either to your endpoint or its service description.
 
-Uploading to the endpoint is simpler, just load them into a named graph, but mixes metadata and data. Some administrators prefer a clean separation.
+Uploading to the endpoint is simpler, just load the compiled RDF into a named graph, but this mixes metadata and data. Some administrators might prefer a cleaner separation.
 
-Exposing metadata through the service description is ideal (and aligns with its intended purpose), but most triplestores do not allow editing it directly. In that case, precompute the service description RDF and serve it via a proxy rule when the endpoint is queried without a `query` parameter.
+Exposing metadata through the endpoint service description is a good alternative (as this aligns with its original intended purpose), but most triplestores do not allow editing it directly. In that case, you could precompute the service description RDF, and serve it via a proxy rule when the endpoint is queried without a `query` parameter.
 
 > [!TIP]
 >
