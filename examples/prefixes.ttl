@@ -1,0 +1,66 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix up: <http://purl.uniprot.org/core/>
+prefix faldo: <http://biohackathon.org/resource/faldo#>
+
+_:sparql_examples_prefixes
+  a owl:Ontology ;
+  rdfs:comment """This is a collection of SPARQL queries that are examples for use on different websites.""" ;
+  owl:imports sh: .
+
+_:sparql_examples_prefixes sh:declare _:prefix_rdf .
+_:prefix_rdf
+  sh:prefix "rdf" ;
+  sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_rdfs .
+_:prefix_rdfs
+  sh:prefix "rdfs" ;
+  sh:namespace "http://www.w3.org/2000/01/rdf-schema#"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_skos .
+_:prefix_skos
+  sh:prefix "skos" ;
+  sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_owl .
+_:prefix_owl
+  sh:prefix "owl" ;
+  sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_bibo .
+_:prefix_bibo
+  sh:prefix "bibo" ;
+  sh:namespace "http://purl.org/ontology/bibo/"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_dc .
+_:prefix_dc
+  sh:prefix "dc" ;
+  sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_xsd .
+_:prefix_xsd
+  sh:prefix "xsd" ;
+  sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_faldo .
+_:prefix_faldo
+  sh:prefix "faldo" ;
+  sh:namespace "http://biohackathon.org/resource/faldo#"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_prov .
+_:prefix_prov
+  sh:prefix "prov" ;
+  sh:namespace "http://www.w3.org/ns/prov#"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_dcterms .
+_:prefix_dcterms
+    sh:prefix "dcterms" ;
+    sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI .
+
+_:sparql_examples_prefixes sh:declare _:prefix_sparql_service_description .
+_:prefix_sparql_service_description
+    sh:prefix "sd" ;
+    sh:namespace "http://www.w3.org/ns/sparql-service-description#"^^xsd:anyURI .

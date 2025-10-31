@@ -1,0 +1,33 @@
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+_:uniprot_sparql_examples_prefixes
+  a owl:Ontology ;
+  owl:imports sh: .
+
+_:uniprot_sparql_examples_prefixes sh:declare _:prefix_up .
+_:prefix_up
+  sh:prefix "up" ;
+  sh:namespace "http://purl.uniprot.org/core/"^^xsd:anyURI .
+
+_:uniprot_sparql_examples_prefixes sh:declare _:prefix_keywords .
+_:prefix_keywords
+  sh:prefix "keywords" ;
+  sh:namespace "http://purl.uniprot.org/keywords/"^^xsd:anyURI .
+
+_:uniprot_sparql_examples_prefixes sh:declare _:prefix_taxon .
+_:prefix_taxon
+  sh:prefix "taxon" ;
+  sh:namespace "http://purl.uniprot.org/taxonomy/"^^xsd:anyURI .
+
+_:uniprot_sparql_examples_prefixes sh:declare _:prefix_ec .
+_:prefix_ec
+  sh:prefix "ec" ;
+  sh:namespace "http://purl.uniprot.org/enzyme/"^^xsd:anyURI .
+
+_:uniprot_sparql_examples_prefixes sh:declare _:prefix_uniprotkb .
+_:prefix_uniprotkb
+  sh:prefix "uniprotkb" ;
+  sh:namespace "http://purl.uniprot.org/uniprot/"^^xsd:anyURI .
