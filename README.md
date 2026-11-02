@@ -173,15 +173,17 @@ WHERE {
       ?o a ?otype .
     } GROUP BY ?stype ?p ?otype
   } UNION {
-    # Objects that are literals
-    SELECT ?stype ?p ?dt (COUNT(DISTINCT ?s) AS ?scount) (COUNT(DISTINCT ?o) AS ?ocount)
+    # Objects that are literals, grouped on the datatype as a string to avoid Virtuoso error SR319 (Max row length is exceeded)
+    # Virtuoso returns no datatype for language-tagged literals, so we fall back to rdf:langString
+    SELECT ?stype ?p ?dtStr (COUNT(DISTINCT ?s) AS ?scount) (COUNT(DISTINCT ?o) AS ?ocount)
     WHERE {
       ?s ?p ?o .
       ?s a ?stype .
       FILTER(isLiteral(?o))
-      BIND(DATATYPE(?o) AS ?dt)
-    } GROUP BY ?stype ?p ?dt
+      BIND(COALESCE(STR(DATATYPE(?o)), "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString") AS ?dtStr)
+    } GROUP BY ?stype ?p ?dtStr
   }
+  BIND(IRI(?dtStr) AS ?dt)
   # Stable IRIs so the same class/property partition is reused across rows (replace the base with your endpoint)
   BIND("https://sparql.example.org/.well-known/void#" AS ?base)
   BIND(IRI(CONCAT(?base, "dataset")) AS ?dataset)
