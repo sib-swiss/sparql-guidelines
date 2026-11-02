@@ -5,6 +5,10 @@ Add precomputed metadata to your SPARQL endpoint to make it easier to query by h
 - **SPARQL examples** give a good idea of the capabilities and known use-cases of your endpoint, as well as recommended query patterns. Most public endpoints already provide example queries, we propose to expose them directly in the SPARQL endpoint in a standard format.
 - **A lightweigth classes schema** provide an overview of all classes actually present in the endpoint and the predicates they use.
 
+> [!NOTE]
+>
+> We recommend to also upload the **ontologies** you use directly to your endpoint. This enables to easily retrieve labels and descriptions for concepts or properties.
+
 <details><summary>About the choice of standard used to define the classes schema</summary>
 
 - [ ] Ontologies are not schema. Ontologies describe *possible* concepts. A schema here describes the *actual content* of the endpoint.
@@ -17,7 +21,7 @@ Add precomputed metadata to your SPARQL endpoint to make it easier to query by h
 >
 > Most endpoints are too large to compute the classes schema on-the-fly, and doing so repeatedly would be computationally, and ecologically, very expensive, so it needs to be precomputed.
 
-## 🧑‍🍳 How?
+## How?
 
 Precompute the metadata as RDF using command line tools, and upload it to the endpoint, either:
 
@@ -38,7 +42,7 @@ The following ontologies are used to define the metadata:
 - [VoID ontology](https://www.w3.org/TR/void/) to represent the classes schema
 - [VoID-ext](http://ldf.fi/void-ext#), an extension to enable describing data properties in VoID (predicates that point to a value, like a string or int, instead of another node IRI)
 
-## 💻 Apps using this framework
+## Apps using this framework
 
 Example of systems relying on this metadata framework:
 
@@ -46,6 +50,10 @@ Example of systems relying on this metadata framework:
 - A query editor with context-aware autocomplete: [sib-swiss.github.io/sparql-editor](https://sib-swiss.github.io/sparql-editor/)
 
 ## 🚀 Setup
+
+> [!NOTE]
+>
+> Require [java](https://www.java.com/en/download/)
 
 Download the latest release of the 2 jar files used to compile metadata:
 
@@ -67,7 +75,7 @@ mkdir -p data
 
 Document query examples for your SPARQL endpoint in RDF turtle files, and use the [`sparql-examples-utils.jar`](https://github.com/sib-swiss/sparql-examples-utils) CLI to validate and compile all files.
 
-1. Fork this repository, or copy its `examples/` folder in your project 
+1. Fork this repository, or copy its `examples/` folder in your project
 2. Edit the content of the `examples/` folder:
    1. Each subfolder corresponds to a different endpoint
    2. Record prefixes in the `prefixes.ttl` files
@@ -134,6 +142,57 @@ java -jar void-generator-*.jar \
 >
 > See the [sib-swiss/void-generator](https://github.com/sib-swiss/void-generator) repository for more details.
 
+If your graph is small enough your can generate the VoID description in one query:
+
+```sparql
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX void-ext: <http://ldf.fi/void-ext#>
+
+CONSTRUCT {
+  ?dataset a void:Dataset ;
+    void:classPartition ?cp .
+  ?cp void:class ?stype ;
+    void:propertyPartition ?pp .
+  ?pp void:property ?p ;
+    void:classPartition ?ocp ;
+    void-ext:datatypePartition ?dtp .
+  ?ocp void:class ?otype ;
+    void:distinctSubjects ?scount ;
+    void:distinctObjects ?ocount .
+  ?dtp void-ext:datatype ?dt ;
+    void:distinctSubjects ?scount ;
+    void:distinctObjects ?ocount .
+}
+WHERE {
+  {
+    # Objects that are typed resources
+    SELECT ?stype ?p ?otype (COUNT(DISTINCT ?s) AS ?scount) (COUNT(DISTINCT ?o) AS ?ocount)
+    WHERE {
+      ?s ?p ?o .
+      ?s a ?stype .
+      ?o a ?otype .
+    } GROUP BY ?stype ?p ?otype
+  } UNION {
+    # Objects that are literals
+    SELECT ?stype ?p ?dt (COUNT(DISTINCT ?s) AS ?scount) (COUNT(DISTINCT ?o) AS ?ocount)
+    WHERE {
+      ?s ?p ?o .
+      ?s a ?stype .
+      FILTER(isLiteral(?o))
+      BIND(DATATYPE(?o) AS ?dt)
+    } GROUP BY ?stype ?p ?dt
+  }
+  # Stable IRIs so the same class/property partition is reused across rows (replace the base with your endpoint)
+  BIND("https://sparql.example.org/.well-known/void#" AS ?base)
+  BIND(IRI(CONCAT(?base, "dataset")) AS ?dataset)
+  BIND(IRI(CONCAT(?base, "cp_", MD5(STR(?stype)))) AS ?cp)
+  BIND(IRI(CONCAT(?base, "pp_", MD5(CONCAT(STR(?stype), " ", STR(?p))))) AS ?pp)
+  # Only one of these is bound per row, the other BIND errors and the related template triples are skipped
+  BIND(IRI(CONCAT(?base, "ocp_", MD5(CONCAT(STR(?stype), " ", STR(?p), " ", STR(?otype))))) AS ?ocp)
+  BIND(IRI(CONCAT(?base, "dtp_", MD5(CONCAT(STR(?stype), " ", STR(?p), " ", STR(?dt))))) AS ?dtp)
+}
+```
+
 ### 📤 Upload the metadata to your endpoint
 
 Once the RDF files are generated, upload them either to your endpoint or its service description.
@@ -181,7 +240,7 @@ WHERE {
     OPTIONAL {
         {
             ?pp  void:classPartition [ void:class ?objectClass ] .
-        	
+
         } UNION {
             ?pp void-ext:datatypePartition [ void-ext:datatype ?objectDatatype ] .
         }
